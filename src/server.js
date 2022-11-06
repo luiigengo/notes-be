@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import express from "express";
 import routes from "./routes/routes.js";
 
@@ -20,7 +18,7 @@ app.use(routes);
 
 sqliteConnection();
 
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Port ${PORT} running`);
