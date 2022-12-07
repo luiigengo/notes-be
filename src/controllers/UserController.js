@@ -2,6 +2,7 @@ import knex from "../database/knex/knex.js";
 import bcrypt from "bcryptjs";
 
 import UserRepository from "../repositories/UserRepository.js";
+import { CreateUserService } from "../services/CreateUserService.js";
 
 export default class UserController {
   async getUser(req, res, next) {
@@ -24,27 +25,19 @@ export default class UserController {
     const { name, email, password, levelId } = req.body;
 
     const userRepository = new UserRepository();
+    const createUserService = new CreateUserService(userRepository);
 
-    try {
-      // const checkEmailExist = await knex("users").where({ email }).first();
-      const checkEmailExist = await userRepository.findByEmail(email);
+    const newUser = await createUserService.execute({
+      name,
+      email,
+      password,
+      levelId,
+    });
 
-      if (checkEmailExist) {
-        throw new Error("Email cadastrado");
-      }
-
-      const hashPassword = await bcrypt.hash(password, 8);
-
-      userRepository.createUser({
-        name,
-        email,
-        password: hashPassword,
-        levelId,
-      });
-      return res.json();
-    } catch (err) {
-      next(err);
-    }
+    return res.json(newUser);
+    // } catch (err) {
+    //   next(err);
+    // }
   }
 
   async updateUser(req, res, next) {
